@@ -1,0 +1,1038 @@
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>对象出轨风险评估系统</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+  
+  <!-- Tailwind配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3B82F6',
+            secondary: '#F59E0B',
+            danger: '#EF4444',
+            warning: '#F97316',
+            success: '#10B981',
+            neutral: '#6B7280',
+            'neutral-light': '#F3F4F6',
+            'neutral-dark': '#1F2937',
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <!-- 自定义工具类 -->
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .scale-hover {
+        @apply transition-transform duration-300 hover:scale-105;
+      }
+      .card-shadow {
+        @apply shadow-lg hover:shadow-xl transition-shadow duration-300;
+      }
+      .gradient-bg {
+        @apply bg-gradient-to-br from-primary/10 to-secondary/10;
+      }
+      .radio-active {
+        @apply bg-primary text-white;
+      }
+    }
+  </style>
+  
+  <style>
+    /* 自定义滚动条 */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #a1a1a1;
+    }
+    
+    /* 平滑滚动 */
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    /* 数字动画 */
+    @keyframes countUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-count {
+      animation: countUp 0.5s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="font-inter bg-gray-50 text-neutral-dark">
+  <!-- 导航栏 -->
+  <header class="fixed w-full bg-white/90 backdrop-blur-sm z-50 shadow-sm transition-all duration-300" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fa fa-heart-crack text-danger text-2xl"></i>
+        <h1 class="text-xl font-bold text-primary">对象出轨风险评估</h1>
+      </div>
+      <nav class="hidden md:flex space-x-8">
+        <a href="#intro" class="text-neutral hover:text-primary transition-colors">评估介绍</a>
+        <a href="#assessment" class="text-neutral hover:text-primary transition-colors">开始评估</a>
+        <a href="#results" class="text-neutral hover:text-primary transition-colors">结果解读</a>
+        <a href="#about" class="text-neutral hover:text-primary transition-colors">关于我们</a>
+      </nav>
+      <button class="md:hidden text-neutral text-xl" id="menu-toggle">
+        <i class="fa fa-bars"></i>
+      </button>
+    </div>
+    <!-- 移动端菜单 -->
+    <div class="md:hidden hidden bg-white shadow-lg absolute w-full" id="mobile-menu">
+      <div class="container mx-auto px-4 py-2 flex flex-col space-y-3">
+        <a href="#intro" class="text-neutral hover:text-primary py-2 transition-colors">评估介绍</a>
+        <a href="#assessment" class="text-neutral hover:text-primary py-2 transition-colors">开始评估</a>
+        <a href="#results" class="text-neutral hover:text-primary py-2 transition-colors">结果解读</a>
+        <a href="#about" class="text-neutral hover:text-primary py-2 transition-colors">关于我们</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 英雄区域 -->
+  <section class="pt-24 pb-16 gradient-bg">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-[clamp(2rem,5vw,3.5rem)] font-bold text-neutral-dark mb-6 leading-tight">
+          科学评估<span class="text-primary">出轨风险</span>，提前洞察情感危机
+        </h2>
+        <p class="text-lg md:text-xl text-neutral mb-8 max-w-3xl mx-auto">
+          基于心理学研究和行为分析，我们开发了专业的出轨风险评估系统，帮助你了解伴侣的忠诚度倾向。
+        </p>
+        <a href="#assessment" class="inline-block bg-primary hover:bg-primary/90 text-white font-medium px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 scale-hover">
+          <i class="fa fa-calculator mr-2"></i>开始评估
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 评估介绍 -->
+  <section id="intro" class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <h3 class="text-2xl md:text-3xl font-bold text-center mb-10">评估系统介绍</h3>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+          <div class="bg-neutral-light rounded-xl p-6 card-shadow">
+            <div class="text-primary text-3xl mb-4">
+              <i class="fa fa-list-ol"></i>
+            </div>
+            <h4 class="text-xl font-bold mb-3">多维度评估</h4>
+            <p class="text-neutral">
+              我们的评估系统从外貌与行为、社交与内在、原生家庭与道德等多个维度全面分析，确保评估结果科学准确。
+            </p>
+          </div>
+          <div class="bg-neutral-light rounded-xl p-6 card-shadow">
+            <div class="text-primary text-3xl mb-4">
+              <i class="fa fa-chart-line"></i>
+            </div>
+            <h4 class="text-xl font-bold mb-3">专业分析</h4>
+            <p class="text-neutral">
+              基于心理学研究成果和大量案例分析，我们开发了专业的评估模型，为你提供可靠的风险评估。
+            </p>
+          </div>
+          <div class="bg-neutral-light rounded-xl p-6 card-shadow">
+            <div class="text-primary text-3xl mb-4">
+              <i class="fa fa-shield-alt"></i>
+            </div>
+            <h4 class="text-xl font-bold mb-3">隐私保护</h4>
+            <p class="text-neutral">
+              所有评估数据仅用于生成评估结果，不会被存储或分享，充分保护你的隐私和个人信息安全。
+            </p>
+          </div>
+          <div class="bg-neutral-light rounded-xl p-6 card-shadow">
+            <div class="text-primary text-3xl mb-4">
+              <i class="fa fa-lightbulb"></i>
+            </div>
+            <h4 class="text-xl font-bold mb-3">提前预警</h4>
+            <p class="text-neutral">
+              通过早期识别潜在风险因素，帮助你及时采取措施，维护健康的恋爱关系。
+            </p>
+          </div>
+        </div>
+        
+        <div class="bg-primary/5 border-l-4 border-primary p-6 rounded-r-lg mb-10">
+          <h4 class="font-bold text-lg mb-2">评估说明</h4>
+          <p class="text-neutral">
+            本评估系统仅供参考，不构成专业建议。每个人的情况都是独特的，评估结果应结合实际情况理性看待。健康的恋爱关系建立在信任、沟通和尊重的基础上。
+          </p>
+        </div>
+        
+        <div class="flex justify-center">
+          <a href="#assessment" class="inline-block bg-primary hover:bg-primary/90 text-white font-medium px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 scale-hover">
+            <i class="fa fa-arrow-down mr-2"></i>开始评估
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 评估部分 -->
+  <section id="assessment" class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <h3 class="text-2xl md:text-3xl font-bold text-center mb-10">开始评估</h3>
+      <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="p-6 md:p-8">
+          <div class="mb-8">
+            <h4 class="text-lg font-bold mb-3">评分说明</h4>
+            <p class="text-neutral mb-4">
+              请根据每个问题的实际表现，从1到5打分，1表示完全不符合，5表示完全符合。
+            </p>
+            <div class="flex items-center justify-between mb-2 text-sm">
+              <span class="text-success">1: 完全不符合</span>
+              <span class="text-neutral">3: 一般符合</span>
+              <span class="text-danger">5: 完全符合</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2 mb-6">
+              <div class="bg-gradient-to-r from-success via-neutral to-danger h-2 rounded-full" style="width: 100%"></div>
+            </div>
+          </div>
+          
+          <form id="assessment-form" class="space-y-8">
+            <!-- 第一部分：外貌与行为 -->
+            <div class="section" data-section="1">
+              <h5 class="text-xl font-bold mb-4 flex items-center">
+                <span class="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center mr-2">1</span>
+                外貌与行为
+              </h5>
+              <div class="space-y-6">
+                <div class="question">
+                  <p class="font-medium mb-3">是否通过整容、假胸、假屁股等方式提升外在性魅力？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+                
+                <div class="question">
+                  <p class="font-medium mb-3">是否不分场合穿着性感衣物（例如瑜伽裤、包臀裙等），并过度追求男性对自己外貌的认可？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 第二部分：社交与内在 -->
+            <div class="section" data-section="2">
+              <h5 class="text-xl font-bold mb-4 flex items-center">
+                <span class="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center mr-2">2</span>
+                社交与内在
+              </h5>
+              <div class="space-y-6">
+                <div class="question">
+                  <p class="font-medium mb-3">是否频繁参加陌生群体的聚会或酒吧活动，并追求感官刺激？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+                
+                <div class="question">
+                  <p class="font-medium mb-3">是否经常与陌生男性发生肢体接触，缺乏自我约束？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+                
+                <div class="question">
+                  <p class="font-medium mb-3">是否讲话肤浅、关注吃喝玩乐、物质利益等，缺乏深入的精神追求？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 第三部分：原生家庭与道德 -->
+            <div class="section" data-section="3">
+              <h5 class="text-xl font-bold mb-4 flex items-center">
+                <span class="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center mr-2">3</span>
+                原生家庭与道德
+              </h5>
+              <div class="space-y-6">
+                <div class="question">
+                  <p class="font-medium mb-3">是否成长于缺乏爱的家庭（例如父母离异、重男轻女），因此可能从不同男性处寻求情感满足？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+                
+                <div class="question">
+                  <p class="font-medium mb-3">是否有过劈腿经历并能够合理化自己的行为？是否没有“一生一世一双人”的忠诚观？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 第四部分：社交软件与异性关系 -->
+            <div class="section" data-section="4">
+              <h5 class="text-xl font-bold mb-4 flex items-center">
+                <span class="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center mr-2">4</span>
+                社交软件与异性关系
+              </h5>
+              <div class="space-y-6">
+                <div class="question">
+                  <p class="font-medium mb-3">是否频繁使用社交软件（如探探等），并享受被男性追求的状态？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+                
+                <div class="question">
+                  <p class="font-medium mb-3">是否与异性朋友的关系过于亲密，聊天没有明确界限（例如称异性为“男闺蜜”或“宝宝”）？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+                
+                <div class="question">
+                  <p class="font-medium mb-3">是否拒绝为伴侣与异性保持距离，甚至在交往中表现得过于亲密？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 第五部分：行踪与隐私 -->
+            <div class="section" data-section="5">
+              <h5 class="text-xl font-bold mb-4 flex items-center">
+                <span class="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center mr-2">5</span>
+                行踪与隐私
+              </h5>
+              <div class="space-y-6">
+                <div class="question">
+                  <p class="font-medium mb-3">是否经常失联或隐瞒去向，外出频率不正常，找借口解释自己的行踪？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+                
+                <div class="question">
+                  <p class="font-medium mb-3">是否过度保护个人隐私，手机反扣、洗澡时带手机，拒绝伴侣查看手机？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 第六部分：其他特征 -->
+            <div class="section" data-section="6">
+              <h5 class="text-xl font-bold mb-4 flex items-center">
+                <span class="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center mr-2">6</span>
+                其他特征
+              </h5>
+              <div class="space-y-6">
+                <div class="question">
+                  <p class="font-medium mb-3">是否接电话时刻意躲避，语气不自然或眼神轻浮？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+                
+                <div class="question">
+                  <p class="font-medium mb-3">是否突然频繁购买香水、内衣等私密商品以提高对异性的吸引力？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 第七部分：情感与态度 -->
+            <div class="section" data-section="7">
+              <h5 class="text-xl font-bold mb-4 flex items-center">
+                <span class="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center mr-2">7</span>
+                情感与态度
+              </h5>
+              <div class="space-y-6">
+                <div class="question">
+                  <p class="font-medium mb-3">是否对伴侣表现出冷淡态度，减少亲密接触，并无故指责伴侣？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+                
+                <div class="question">
+                  <p class="font-medium mb-3">是否因暧昧对象的消息而表现出喜悦或焦虑，外貌管理突然有变化？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 第八部分：物质与社交 -->
+            <div class="section" data-section="8">
+              <h5 class="text-xl font-bold mb-4 flex items-center">
+                <span class="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center mr-2">8</span>
+                物质与社交
+              </h5>
+              <div class="space-y-6">
+                <div class="question">
+                  <p class="font-medium mb-3">是否对金钱和物质有强烈欲望，容易因经济差距而出轨？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+                
+                <div class="question">
+                  <p class="font-medium mb-3">是否接受陌生男性的好意，例如送回家，且缺乏防备心？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 第九部分：社交与自我边界 -->
+            <div class="section" data-section="9">
+              <h5 class="text-xl font-bold mb-4 flex items-center">
+                <span class="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center mr-2">9</span>
+                社交与自我边界
+              </h5>
+              <div class="space-y-6">
+                <div class="question">
+                  <p class="font-medium mb-3">是否接受马路上的搭讪，享受被男性追求并炫耀自己的吸引力？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+                
+                <div class="question">
+                  <p class="font-medium mb-3">是否频繁参加社交活动，与大量异性交往，却不向伴侣公开自己的社交生活？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 第十部分：生活状态 -->
+            <div class="section" data-section="10">
+              <h5 class="text-xl font-bold mb-4 flex items-center">
+                <span class="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center mr-2">10</span>
+                生活状态
+              </h5>
+              <div class="space-y-6">
+                <div class="question">
+                  <p class="font-medium mb-3">是否为无业游民，日常生活懒散，因空虚而容易寻求婚外刺激？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+                
+                <div class="question">
+                  <p class="font-medium mb-3">是否在面相上有一些特征（例如眼尾有痣、上薄下厚嘴唇、眼睫毛上翘），因此可能具有较高出轨风险？</p>
+                  <div class="flex items-center justify-between">
+                    <div class="score-option" data-score="1">1</div>
+                    <div class="score-option" data-score="2">2</div>
+                    <div class="score-option" data-score="3">3</div>
+                    <div class="score-option" data-score="4">4</div>
+                    <div class="score-option" data-score="5">5</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex justify-center pt-4">
+              <button type="button" id="calculate-btn" class="bg-primary hover:bg-primary/90 text-white font-medium px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 scale-hover">
+                <i class="fa fa-calculator mr-2"></i>计算结果
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 结果部分 -->
+  <section id="results" class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <h3 class="text-2xl md:text-3xl font-bold text-center mb-10">结果解读</h3>
+      
+      <div class="max-w-4xl mx-auto">
+        <!-- 结果卡片 -->
+        <div id="result-card" class="hidden bg-white rounded-2xl shadow-xl overflow-hidden mb-12 transform transition-all duration-500 scale-95 opacity-0">
+          <div class="p-6 md:p-8">
+            <h4 class="text-2xl font-bold mb-6 text-center">评估结果</h4>
+            
+            <div class="flex flex-col md:flex-row gap-8 mb-8">
+              <div class="w-full md:w-1/3 flex flex-col items-center justify-center">
+                <div class="relative w-40 h-40 mb-4">
+                  <canvas id="result-chart" width="160" height="160"></canvas>
+                  <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <span id="total-score" class="text-4xl font-bold">0</span>
+                    <span class="text-sm text-neutral">总分</span>
+                  </div>
+                </div>
+                <div class="mt-2 text-center">
+                  <span id="risk-level" class="text-xl font-bold text-primary"></span>
+                </div>
+              </div>
+              
+              <div class="w-full md:w-2/3">
+                <h5 class="text-lg font-bold mb-3">评估分析</h5>
+                <div class="space-y-4">
+                  <div class="flex items-center">
+                    <div class="w-1/3 font-medium">外貌与行为得分:</div>
+                    <div class="w-2/3">
+                      <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div id="section-1-progress" class="bg-gradient-to-r from-success to-warning h-2 rounded-full" style="width: 0%"></div>
+                      </div>
+                      <div class="flex justify-between text-xs mt-1">
+                        <span>低</span>
+                        <span id="section-1-score">0</span>
+                        <span>高</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center">
+                    <div class="w-1/3 font-medium">社交与内在得分:</div>
+                    <div class="w-2/3">
+                      <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div id="section-2-progress" class="bg-gradient-to-r from-success to-warning h-2 rounded-full" style="width: 0%"></div>
+                      </div>
+                      <div class="flex justify-between text-xs mt-1">
+                        <span>低</span>
+                        <span id="section-2-score">0</span>
+                        <span>高</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center">
+                    <div class="w-1/3 font-medium">原生家庭与道德得分:</div>
+                    <div class="w-2/3">
+                      <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div id="section-3-progress" class="bg-gradient-to-r from-success to-warning h-2 rounded-full" style="width: 0%"></div>
+                      </div>
+                      <div class="flex justify-between text-xs mt-1">
+                        <span>低</span>
+                        <span id="section-3-score">0</span>
+                        <span>高</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center">
+                    <div class="w-1/3 font-medium">社交软件与异性关系得分:</div>
+                    <div class="w-2/3">
+                      <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div id="section-4-progress" class="bg-gradient-to-r from-success to-warning h-2 rounded-full" style="width: 0%"></div>
+                      </div>
+                      <div class="flex justify-between text-xs mt-1">
+                        <span>低</span>
+                        <span id="section-4-score">0</span>
+                        <span>高</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center">
+                    <div class="w-1/3 font-medium">行踪与隐私得分:</div>
+                    <div class="w-2/3">
+                      <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div id="section-5-progress" class="bg-gradient-to-r from-success to-warning h-2 rounded-full" style="width: 0%"></div>
+                      </div>
+                      <div class="flex justify-between text-xs mt-1">
+                        <span>低</span>
+                        <span id="section-5-score">0</span>
+                        <span>高</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-neutral-light p-6 rounded-xl mb-8">
+              <h5 class="text-lg font-bold mb-3">风险分析</h5>
+              <p id="risk-analysis" class="text-neutral"></p>
+            </div>
+            
+            <div class="bg-primary/5 border-l-4 border-primary p-6 rounded-r-lg">
+              <h5 class="font-bold text-lg mb-2">专业建议</h5>
+              <p id="recommendations" class="text-neutral"></p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 结果占位符 -->
+        <div id="result-placeholder" class="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div class="p-6 md:p-8 text-center">
+            <div class="text-6xl text-neutral/30 mb-4">
+              <i class="fa fa-bar-chart"></i>
+            </div>
+            <h4 class="text-xl font-bold mb-2">完成评估，获取结果</h4>
+            <p class="text-neutral mb-6">完成所有问题后，点击"计算结果"按钮，获取详细的出轨风险评估报告</p>
+            <a href="#assessment" class="inline-block bg-primary hover:bg-primary/90 text-white font-medium px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 scale-hover">
+              <i class="fa fa-arrow-up mr-2"></i>返回评估
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 关于部分 -->
+  <section id="about" class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <h3 class="text-2xl md:text-3xl font-bold text-center mb-10">关于我们</h3>
+      
+      <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div class="p-6 md:p-8">
+            <div class="mb-8">
+              <h4 class="text-xl font-bold mb-4">评估系统介绍</h4>
+              <p class="text-neutral mb-4">
+                本评估系统基于心理学研究和行为分析，通过多维度评估方法，帮助用户了解伴侣的出轨风险倾向。我们的评估模型综合考虑了外貌与行为、社交与内在、原生家庭与道德等多个方面的因素。
+              </p>
+              <p class="text-neutral">
+                需要强调的是，本评估结果仅供参考，不能作为判断伴侣忠诚度的唯一依据。每个人的情况都是独特的，健康的恋爱关系建立在信任、沟通和尊重的基础上。
+              </p>
+            </div>
+            
+            <div class="mb-8">
+              <h4 class="text-xl font-bold mb-4">使用须知</h4>
+              <ul class="list-disc pl-6 space-y-2 text-neutral">
+                <li>本评估系统仅供娱乐和参考，不构成专业建议。</li>
+                <li>评估结果应理性看待，避免过度解读或产生不必要的猜疑。</li>
+                <li>我们尊重用户隐私，所有评估数据仅用于生成报告，不会被存储或分享。</li>
+                <li>如果您对评估结果有疑问或担忧，建议与伴侣进行坦诚沟通。</li>
+                <li>如需专业的情感咨询，请寻求专业心理咨询师的帮助。</li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 class="text-xl font-bold mb-4">联系我们</h4>
+              <p class="text-neutral mb-4">
+                如果您对评估系统有任何建议或疑问，欢迎通过以下方式联系我们：
+              </p>
+              <div class="flex items-center space-x-4">
+                <a href="#" class="text-primary hover:text-primary/80 transition-colors">
+                  <i class="fa fa-envelope mr-2"></i>邮箱：contact@example.com
+                </a>
+                <a href="#" class="text-primary hover:text-primary/80 transition-colors">
+                  <i class="fa fa-weixin mr-2"></i>微信：example
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer class="bg-neutral-dark text-white py-12">
+    <div class="container mx-auto px-4">
+      <div class="grid md:grid-cols-3 gap-8 mb-8">
+        <div>
+          <h4 class="text-xl font-bold mb-4">对象出轨风险评估</h4>
+          <p class="text-gray-400 mb-4">
+            专业的情感风险评估系统，帮助您提前洞察情感危机，维护健康的恋爱关系。
+          </p>
+          <div class="flex space-x-4">
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fa fa-weibo"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fa fa-weixin"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fa fa-instagram"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div>
+          <h4 class="text-lg font-bold mb-4">快速链接</h4>
+          <ul class="space-y-2">
+            <li><a href="#intro" class="text-gray-400 hover:text-white transition-colors">评估介绍</a></li>
+            <li><a href="#assessment" class="text-gray-400 hover:text-white transition-colors">开始评估</a></li>
+            <li><a href="#results" class="text-gray-400 hover:text-white transition-colors">结果解读</a></li>
+            <li><a href="#about" class="text-gray-400 hover:text-white transition-colors">关于我们</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="text-lg font-bold mb-4">联系我们</h4>
+          <ul class="space-y-2">
+            <li class="flex items-center text-gray-400">
+              <i class="fa fa-envelope mr-2"></i> contact@example.com
+            </li>
+            <li class="flex items-center text-gray-400">
+              <i class="fa fa-phone mr-2"></i> +86 123 4567 8901
+            </li>
+            <li class="flex items-center text-gray-400">
+              <i class="fa fa-map-marker mr-2"></i> 北京市朝阳区某某大厦
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-700 pt-8 text-center text-gray-400">
+        <p>© 2025 对象出轨风险评估系统 版权所有</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // 导航栏滚动效果
+      const navbar = document.getElementById('navbar');
+      window.addEventListener('scroll', function() {
+        if (window.scrollY > 10) {
+          navbar.classList.add('py-2', 'shadow-md');
+          navbar.classList.remove('py-3', 'shadow-sm');
+        } else {
+          navbar.classList.add('py-3', 'shadow-sm');
+          navbar.classList.remove('py-2', 'shadow-md');
+        }
+      });
+      
+      // 移动端菜单切换
+      const menuToggle = document.getElementById('menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      menuToggle.addEventListener('click', function() {
+        mobileMenu.classList.toggle('hidden');
+      });
+      
+      // 评分选项交互
+      const scoreOptions = document.querySelectorAll('.score-option');
+      scoreOptions.forEach(option => {
+        option.addEventListener('click', function() {
+          const question = this.closest('.question');
+          const options = question.querySelectorAll('.score-option');
+          
+          // 移除所有选中状态
+          options.forEach(opt => {
+            opt.classList.remove('radio-active');
+            opt.classList.add('bg-white', 'border', 'border-gray-300', 'rounded-full', 'w-10', 'h-10', 'flex', 'items-center', 'justify-center', 'cursor-pointer', 'hover:bg-gray-100', 'transition-colors');
+          });
+          
+          // 添加当前选中状态
+          this.classList.add('radio-active');
+          this.classList.remove('bg-white', 'border', 'border-gray-300', 'hover:bg-gray-100');
+        });
+      });
+      
+      // 初始化评分选项样式
+      scoreOptions.forEach(option => {
+        option.classList.add('bg-white', 'border', 'border-gray-300', 'rounded-full', 'w-10', 'h-10', 'flex', 'items-center', 'justify-center', 'cursor-pointer', 'hover:bg-gray-100', 'transition-colors');
+      });
+      
+      // 计算结果按钮点击事件
+      const calculateBtn = document.getElementById('calculate-btn');
+      const resultCard = document.getElementById('result-card');
+      const resultPlaceholder = document.getElementById('result-placeholder');
+      
+      calculateBtn.addEventListener('click', () => {
+        const questions = document.querySelectorAll('.question');
+        let totalScore = 0;
+        let sectionScores = Array(10).fill(0);
+        let sectionCounts = [2, 3, 2, 3, 2, 2, 2, 2, 2, 2]; // 每个部分的问题数量
+        
+        let unanswered = 0;
+        
+        questions.forEach((question, index) => {
+          const selectedOption = question.querySelector('.radio-active');
+          const sectionIndex = Math.floor(index / 2); // 每2个问题一个部分
+          
+          if (selectedOption) {
+            const score = parseInt(selectedOption.getAttribute('data-score'));
+            totalScore += score;
+            sectionScores[sectionIndex] += score;
+          } else {
+            unanswered++;
+          }
+        });
+        
+        // 调试信息
+        console.log(`未回答问题数量: ${unanswered}`);
+        console.log(`总得分: ${totalScore}`);
+        console.log(`各部分得分:`, sectionScores);
+        
+        if (unanswered > 0) {
+          alert(`还有 ${unanswered} 个问题未回答，请完成所有问题后再计算结果。`);
+          return;
+        }
+        
+        // 计算各部分百分比
+        const sectionPercentages = sectionScores.map((score, index) => {
+          return (score / (sectionCounts[index] * 5)) * 100;
+        });
+        
+        // 更新结果显示
+        updateResult(totalScore, sectionScores, sectionPercentages);
+        
+        // 显示结果卡片
+        resultPlaceholder.classList.add('hidden');
+        resultCard.classList.remove('hidden');
+        
+        // 平滑滚动到结果部分
+        document.getElementById('results').scrollIntoView({
+          behavior: 'smooth'
+        });
+        
+        // 添加动画效果
+        setTimeout(() => {
+          resultCard.classList.remove('scale-95', 'opacity-0');
+        }, 100);
+      });
+      
+      // 更新结果显示
+      function updateResult(totalScore, sectionScores, sectionPercentages) {
+        // 更新总分
+        document.getElementById('total-score').textContent = totalScore;
+        
+        // 更新各部分得分和进度条
+        for (let i = 0; i < 10; i++) {
+          const progressBar = document.getElementById(`section-${i+1}-progress`);
+          const scoreDisplay = document.getElementById(`section-${i+1}-score`);
+          
+          if (progressBar && scoreDisplay) {
+            progressBar.style.width = `${sectionPercentages[i]}%`;
+            scoreDisplay.textContent = sectionScores[i];
+          }
+        }
+        
+        // 更新风险等级
+        let riskLevel, riskColor, riskAnalysis, recommendations;
+        
+        if (totalScore >= 85) {
+          riskLevel = "极高风险";
+          riskColor = "text-danger";
+          riskAnalysis = "评估结果显示，您的伴侣存在极高的出轨风险。TA在外貌与行为、社交与内在、行踪与隐私等多个方面表现出较高的风险特征，可能已经处于出轨边缘或正在进行出轨行为。";
+          recommendations = "建议您与伴侣进行坦诚的沟通，表达您的担忧和感受。同时，注意收集相关证据，保护自己的权益。如果情况严重，建议寻求专业心理咨询师的帮助，共同面对问题。";
+        } else if (totalScore >= 65) {
+          riskLevel = "高风险";
+          riskColor = "text-warning";
+          riskAnalysis = "评估结果显示，您的伴侣存在较高的出轨风险。TA在多个方面表现出一些风险特征，可能对当前关系存在不满或正在寻求外部刺激。";
+          recommendations = "建议您与伴侣加强沟通，了解彼此的需求和感受，共同努力改善关系。同时，注意观察伴侣的行为变化，及时发现问题并采取措施。";
+        } else if (totalScore >= 45) {
+          riskLevel = "中等风险";
+          riskColor = "text-secondary";
+          riskAnalysis = "评估结果显示，您的伴侣存在一定的出轨风险。TA在某些方面表现出一些风险特征，但尚未达到明显的程度。";
+          recommendations = "建议您与伴侣保持良好的沟通，增强彼此的信任和理解。关注关系中的细节，及时发现并解决潜在的问题，共同维护健康的恋爱关系。";
+        } else {
+          riskLevel = "低风险";
+          riskColor = "text-success";
+          riskAnalysis = "评估结果显示，您的伴侣出轨风险较低。TA在各个方面表现较为稳定，对关系的忠诚度较高。";
+          recommendations = "建议您继续与伴侣保持良好的沟通和互动，共同营造健康、稳定的恋爱关系。同时，也要注意关注彼此的需求和感受，不断提升关系质量。";
+        }
+        
+        document.getElementById('risk-level').textContent = riskLevel;
+        document.getElementById('risk-level').className = `text-xl font-bold ${riskColor}`;
+        document.getElementById('risk-analysis').textContent = riskAnalysis;
+        document.getElementById('recommendations').textContent = recommendations;
+        
+        // 更新雷达图
+        updateRadarChart(sectionScores);
+      }
+      
+      // 更新雷达图
+      function updateRadarChart(sectionScores) {
+        const ctx = document.getElementById('result-chart').getContext('2d');
+        
+        // 销毁旧图表（如果存在）
+        if (window.resultChart) {
+          window.resultChart.destroy();
+        }
+        
+        // 创建新图表
+        window.resultChart = new Chart(ctx, {
+          type: 'radar',
+          data: {
+            labels: [
+              '外貌与行为',
+              '社交与内在',
+              '原生家庭与道德',
+              '社交软件与异性关系',
+              '行踪与隐私',
+              '其他特征',
+              '情感与态度',
+              '物质与社交',
+              '社交与自我边界',
+              '生活状态'
+            ],
+            datasets: [{
+              label: '风险得分',
+              data: sectionScores,
+              backgroundColor: 'rgba(59, 130, 246, 0.2)',
+              borderColor: 'rgba(59, 130, 246, 1)',
+              borderWidth: 2,
+              pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+              pointBorderColor: '#fff',
+              pointHoverBackgroundColor: '#fff',
+              pointHoverBorderColor: 'rgba(59, 130, 246, 1)'
+            }]
+          },
+          options: {
+            scales: {
+              r: {
+                angleLines: {
+                  display: true
+                },
+                suggestedMin: 0,
+                suggestedMax: 10,
+                ticks: {
+                  stepSize: 2
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                display: false
+              }
+            },
+            elements: {
+              line: {
+                tension: 0.1
+              }
+            },
+            responsive: true,
+            maintainAspectRatio: true
+          }
+        });
+      }
+      
+      // 平滑滚动
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          
+          // 关闭移动端菜单（如果打开）
+          if (!mobileMenu.classList.contains('hidden')) {
+            mobileMenu.classList.add('hidden');
+          }
+          
+          const targetId = this.getAttribute('href');
+          if (targetId === '#') return;
+          
+          const targetElement = document.querySelector(targetId);
+          if (targetElement) {
+            targetElement.scrollIntoView({
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
